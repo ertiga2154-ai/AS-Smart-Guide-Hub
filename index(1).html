@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AS Smart Guide Hub - Max Edition</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background: #0f172a; color: #f3f4f6; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 25px 15px; }
+        
+        .container { width: 100%; max-width: 440px; }
+        
+        /* Premium Header Styling with Branding */
+        header { text-align: center; margin-bottom: 25px; background: #1e293b; padding: 20px; border-radius: 20px; border: 1px solid #334155; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .welcome-msg { font-size: 1.1rem; color: #38bdf8; font-weight: 600; margin-bottom: 5px; }
+        header h1 { color: #f59e0b; font-size: 1.8rem; letter-spacing: 1px; font-weight: 800; }
+        .branding-badge { display: inline-block; background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: #fff; font-size: 0.75rem; font-weight: bold; padding: 4px 12px; border-radius: 20px; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(59,130,246,0.4); }
+
+        /* Dashboard Menu Styles */
+        .main-menu { display: flex; flex-direction: column; gap: 16px; width: 100%; margin-top: 10px; }
+        .menu-btn { width: 100%; padding: 20px; font-size: 1.2rem; font-weight: bold; border: none; border-radius: 166px; cursor: pointer; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s; color: #0f172a; }
+        .menu-btn:active { transform: scale(0.97); }
+        .bg-yellow { background: #fef08a; }
+        .bg-blue { background: #bae6fd; }
+        .bg-pink { background: #fecdd3; }
+        .bg-gradient-purple { background: linear-gradient(135deg, #c084fc, #e879f9); color: #fff; }
+        .bg-gradient-gold { background: linear-gradient(135deg, #fbbf24, #d97706); color: #fff; }
+
+        /* Workspace Layouts */
+        .workspace-panel { display: none; width: 100%; animation: slideIn 0.4s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        .btn-back { 
+    background: #1e293b; 
+    color: #38bdf8; 
+    border: 1px solid #334155; 
+    padding: 10px 20px; 
+    border-radius: 50px; 
+    cursor: pointer; 
+    margin-bottom: 25px; 
+    font-size: 0.9rem; 
+    font-weight: bold; 
+    display: inline-flex; 
+    align-items: center; 
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+}
+.btn-back:active {
+    transform: scale(0.95);
+    background: #2d3748;
+}
+
+        /* Sub Grids */
+        .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+        .item-card { background: #1e293b; border: 1px solid #334155; border-radius: 14px; padding: 18px; text-align: center; cursor: pointer; transition: background 0.2s; }
+        .item-card:hover { background: #2d3748; }
+        .item-card .icon { font-size: 2.2rem; margin-bottom: 8px; }
+        .item-card h4 { font-size: 0.95rem; color: #fff; }
+
+        /* About Me Premium Specialised Dynamic Layout Profile (Replaces Egg) */
+        .profile-card { background: #1e293b; border: 1px solid #475569; border-radius: 24px; padding: 25px 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.4); }
+        .egg-avatar-box { width: 140px; height: 186px; background: #334155; margin: 0 auto 20px auto; border-radius: 21% 79% 20% 80% / 78% 19% 81% 22% ; overflow: hidden; border: 4px solid #fbbf24; box-shadow: 0 0 15px rgba(251,191,36,0.4); display: flex; align-items: center; justify-content: center; }
+        .egg-avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-card h3 { color: #fbbf24; font-size: 1.5rem; margin-bottom: 15px; font-weight: 866; letter-spacing: 0.5px; }
+        .info-table { width: 100%; border-collapse: collapse; margin-top: 10px; text-align: left; }
+        .info-table tr { border-bottom: 1px solid #334155; }
+        .info-table tr:last-child { border-bottom: none; }
+        .info-table td { padding: 12px 8px; font-size: 0.9rem; vertical-align: top; }
+        .td-label { color: #94a3b8; font-weight: 600; width: 46%; }
+        .td-val { color: #f3f4f6; font-weight: 500; }
+
+        /* Travel Form Terminal Console */
+        .travel-form-box { background: #1e293b; border: 1px solid #475569; border-radius: 16px; padding: 18px; margin-top: 15px; display: none; }
+        .travel-form-box h3 { font-size: 1.1rem; color: #fff; margin-bottom: 15px; text-align: center; }
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px; }
+        .input-group input { width: 100%; background: #0f172a; border: 1px solid #475569; border-radius: 8px; padding: 11px; color: #fff; outline: none; font-size: 0.95rem; }
+        .btn-route-launch { width: 100%; background: linear-gradient(to right, #10b981, #059669); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 1rem; }
+
+        /* AC Branding UI Layouts */
+        .ac-config-box { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 15px; margin-bottom: 20px; }
+        .select-group { margin-bottom: 12px; }
+        .select-group label { display: block; font-size: 0.8rem; color: #94a3b8; margin-bottom: 6px; }
+        .select-group select { width: 100%; background: #0f172a; border: 1px solid #475569; border-radius: 8px; padding: 10px; color: #fff; outline: none; }
+        .btn-launch { width: 100%; background: linear-gradient(to right, #38bdf8, #0284c7); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+
+        /* Clinical Medical Layout Panels */
+        .medical-card { background: #1e293b; border-radius: 16px; padding: 16px; border-left: 5px solid #f43f5e; margin-bottom: 15px; }
+        .medical-card h3 { color: #f43f5e; font-size: 1.1rem; margin-bottom: 10px; }
+        .med-sec { background: #0f172a; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 0.85rem; line-height: 1.5; }
+        .med-sec strong { display: block; margin-bottom: 3px; }
+        .txt-green { color: #10b981; }
+        .txt-red { color: #f43f5e; }
+        .txt-blue { color: #38bdf8; }
+
+        /* Video System Framework */
+        .video-player-panel { display: none; background: #1e293b; border-radius: 16px; padding: 15px; margin-top: 20px; border: 1px solid #475569; }
+        .video-box { position: relative; width: 100%; padding-bottom: 56.25%; height: 0; border-radius: 10px; overflow: hidden; background: #000; }
+        .video-box iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .fallback-container { margin-top: 15px; background: #0f172a; padding: 14px; border-radius: 10px; text-align: center; border: 1px dashed #475569; }
+        .fallback-btn { background: #ef4444; color: white; text-decoration: none; padding: 10px 14px; font-size: 0.9rem; font-weight: bold; border-radius: 8px; display: inline-block; margin-top: 8px; box-shadow: 0 4px 10px rgba(239,68,68,0.3); }
+
+        /* Footer Branding Custom Box */
+        footer { text-align: center; margin-top: 40px; color: #64748b; font-size: 0.75rem; border-top: 1px solid #1e293b; padding-top: 15px; width: 100%; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="welcome-msg" id="dynamic-greet">Loading Greeting...</div>
+        <h1>AS GUIDE HUB</h1>
+        <div class="branding-badge">Developed by Arman Sk</div>
+    </header>
+
+    <div class="main-menu" id="home-dashboard">
+        <button class="menu-btn bg-yellow" onclick="routeTo('cooking-panel')">🍔 Cooking Recipes</button>
+        <button class="menu-btn bg-blue" onclick="routeTo('gadgets-panel')">🔌 Home Gadgets & AC Setup</button>
+        <button class="menu-btn bg-pink" onclick="routeTo('health-panel')">🏥 Advanced Clinical Disease Care</button>
+        <button class="menu-btn bg-gradient-purple" onclick="routeTo('travel-panel')">🗺️ Travel & Navigation Matrix</button>
+        <button class="menu-btn bg-gradient-gold" onclick="routeTo('about-panel')">👑 About Developer (Me)</button>
+    </div>
+
+    <div class="workspace-panel" id="cooking-panel">
+    <button class="btn-back" onclick="backToHome()">⬅️ Back to Dashboard</button>
+    <h2 style="margin-bottom: 15px; color:#f59e0b;">Recipe Hub</h2>
+        <div class="sub-grid">
+            <div class="item-card" onclick="loadVideo('Rui Macher Jhol', '70TKVIfv4zc')"><div class="icon">🐟</div><h4>Bengali Fish Curry</h4></div>
+            <div class="item-card" onclick="loadVideo('Chicken Kosha', 'XmL6giKPcWI')"><div class="icon">🍗</div><h4>Chicken Kosha</h4></div>
+            <div class="item-card" onclick="loadVideo('Kolkata Style Mutton Biryani', 'jd3Jeh9lWvg')"><div class="icon">🍛</div><h4>Mutton Biryani</h4></div>
+            <div class="item-card" onclick="loadVideo('Chingri Malaikari', 'Posnbi_sch4')"><div class="icon">🍤</div><h4>Chingri Malaikari</h4></div>
+            <div class="item-card" onclick="loadVideo('Shahi Paneer Recipe', 'aMBpOREQoSA')"><div class="icon">🧀</div><h4>Shahi Paneer</h4></div>
+            <div class="item-card" onclick="loadVideo('Chowmein Noodles', 'ghqijx9lvl4')"><div class="icon">🍜</div><h4>Egg Noodles</h4></div>
+        </div>
+    </div>
+
+    <div class="workspace-panel" id="gadgets-panel">
+    <button class="btn-back" onclick="backToHome()">⬅️ Back to Dashboard</button>
+    <h2 style="margin-bottom: 15px; color:#38bdf8;">Gadgets Guide</h2>
+        
+        <div class="ac-config-box">
+            <h3 style="font-size:1rem; color:#fff; margin-bottom:12px; display:flex; align-items:center; gap:6px;">❄️ Smart AC Operation Console</h3>
+            <div class="select-group">
+                <label>AC Company Brand Choose Korun:</label>
+                <select id="ac-brand">
+                    <option value="Voltas">Voltas</option>
+                    <option value="Daikin">Daikin</option>
+                    <option value="LG">LG</option>
+                    <option value="Samsung">Samsung</option>
+                </select>
+            </div>
+            <div class="select-group">
+                <label>Capacity Tonnage Choose Korun:</label>
+                <select id="ac-ton">
+                    <option value="1 Ton">1 Ton</option>
+                    <option value="1.5 Ton">1.5 Ton</option>
+                    <option value="2 Ton">2 Ton</option>
+                </select>
+            </div>
+            <button class="btn-launch" onclick="launchACVideo()">SHOW REMOTES & OPERATION ⚡</button>
+        </div>
+
+        <div class="sub-grid">
+            <div class="item-card" onclick="loadVideo('Microwave Oven Cooking Rule', 'DN9BerN3MA0')"><div class="icon">🍲</div><h4>Microwave Oven</h4></div>
+            <div class="item-card" onclick="loadVideo('Fully Automatic Washing Machine', '64TAMY3fWMA')"><div class="icon">🧼</div><h4>Washing Machine</h4></div>
+            <div class="item-card" onclick="loadVideo('Refrigerator Temperature Controller', 'FHzoUBI_V08')"><div class="icon">🍦</div><h4>Refrigerator Settings</h4></div>
+            <div class="item-card" onclick="loadVideo('Smart Android TV Wi-Fi Configuration', 'MVeH4loYxzI')"><div class="icon">📺</div><h4>Smart TV Setup</h4></div>
+        </div>
+    </div>
+
+    <div class="workspace-panel" id="health-panel">
+    <button class="btn-back" onclick="backToHome()">⬅️ Back to Dashboard</button>
+    <h2 style="margin-bottom: 15px; color:#f43f5e;">Disease Control Dashboard</h2>
+        
+        <div class="medical-card">
+            <h3>🩸 Diabetes / High Sugar Care</h3>
+            <div class="med-sec"><strong class="txt-red">🔴 High Sugar-e Ki Khaben Na:</strong> Chini, mishti, batasha, cola drink, boro aam, kolar moton high glucose fruit, boro alu ar moidar porota porat pori bondho rakhun।</div>
+            <div class="med-sec"><strong class="txt-green">🟢 High Sugar-e Ki Khaben:</strong> Korolla-r jush, dherosh bhejano jol, oats, daliya, sosa, labra torkari ar bhat er poriman komiye ruti khoroch korun।</div>
+            <div class="med-sec"><strong class="txt-blue">🏃‍♂️ Ki Korben & Korben Na:</strong> Khali paye math-e hatben na, protidin sakal-e jore 30 min hatun, rater ranna 8:30 tar modhe complete korun। Insulin checkup bad deben na।</div>
+            <button class="btn-launch" style="background:#4c1d95;" onclick="loadVideo('Diabetes Controlling Food Chart', 'AGusVVh_jjQ')">Watch Video Guide 📺</button>
+        </div>
+
+        <div class="medical-card" style="border-left-color: #3b82f6;">
+            <h3 style="color:#3b82f6;">🫀 High Blood Pressure (BP)</h3>
+            <div class="med-sec"><strong class="txt-red">❌ Avoid:</strong> Kaacha noon (Raw Salt) khabar upar theke ekdom bondho, khashir mangsho, papor bhaja, achhar ar dhumpan full bondho।</div>
+            <div class="med-sec"><strong class="txt-green">✅ Allowed:</strong> Rosun-er koa, tok doi, lemon water, kola (potassium thake), oga shak-sobji।</div>
+            <button class="btn-launch" style="background:#1e3a8a;" onclick="loadVideo('High BP Treatment Rules', 'TsREUNP1Z_w')">Watch Video Guide 📺</button>
+        </div>
+
+        <div class="medical-card" style="border-left-color: #10b981;">
+            <h3 style="color:#10b981;">🧪 High Cholesterol Care</h3>
+            <div class="med-sec"><strong class="txt-red">❌ Avoid:</strong> Dalda, bonoshpoti, ghie bhaja porota, mangsher chorbi, dim-er kusum ar fast-food er dokaner teler tel-bhaja।</div>
+            <div class="med-sec"><strong class="txt-green">✅ Allowed:</strong> Isabgul-er bhushi, methi bheja jol, omar methi gura, rui-katla macher patla jhol ar oliver oil use।</div>
+            <button class="btn-launch" style="background:#064e3b;" onclick="loadVideo('Reduce Bad Cholesterol Tips', '7kAotTN113k')">Watch Video Guide 📺</button>
+        </div>
+
+        <div class="medical-card" style="border-left-color: #a855f7;">
+            <h3 style="color:#a855f7;">🦋 Thyroid Management</h3>
+            <div class="med-sec"><strong class="txt-red">❌ Avoid:</strong> Badhakopi, fulkopi, olkopi, soya chunk/soyabean er torkari, ar atirikto caffeine cha-coffee single day te bad deya bhalo।</div>
+            <div class="med-sec"><strong class="txt-green">✅ Allowed:</strong> Iodiene jukto lobon, badam, mach, dim er shada ongsho ar jodu niyomito thyroid test kora।</div>
+            <button class="btn-launch" style="background:#581c87;" onclick="loadVideo('Thyroid Patients Diet Sheet', 'tmqXUvP3H6M')">Watch Video Guide 📺</button>
+        </div>
+    </div>
+
+    <div class="workspace-panel" id="travel-panel">
+    <button class="btn-back" onclick="backToHome()">⬅️ Back to Dashboard</button>
+    <h2 style="margin-bottom: 15px; color:#c084fc;">Dynamic Trip Planner</h2>
+        
+        <div class="sub-grid">
+            <div class="item-card" style="border-color:#a855f7;" onclick="openNavigationForm('bike')"><div class="icon">🏍️</div><h4 style="color:#c084fc;">Bike Route</h4></div>
+            <div class="item-card" style="border-color:#a855f7;" onclick="openNavigationForm('car')"><div class="icon">🚗</div><h4 style="color:#c084fc;">Car Route</h4></div>
+            <div class="item-card" style="border-color:#e879f9;" onclick="openNavigationForm('train')"><div class="icon">🚂</div><h4 style="color:#f472b6;">Train Tracker</h4></div>
+            <div class="item-card" style="border-color:#e879f9;" onclick="openNavigationForm('aeroplane')"><div class="icon">✈️</div><h4 style="color:#f472b6;">Flight Engine</h4></div>
+        </div>
+
+        <div class="travel-form-box" id="nav-input-terminal">
+            <h3 id="terminal-mode-title">🗺️ Route Configuration</h3>
+            <div class="input-group">
+                <label>Kothay Theke Rowna Hoben (From / Origin):</label>
+                <input type="text" id="geo-from" placeholder="E.g., Sainthia">
+            </div>
+            <div class="input-group">
+                <label>Kothay Jaben (To / Destination):</label>
+                <input type="text" id="geo-to" placeholder="E.g., Kolkata">
+            </div>
+            <button class="btn-route-launch" onclick="executeExternalNavigation()">SEARCH ROUTE NOW ⚡</button>
+        </div>
+    </div>
+
+    <div class="workspace-panel" id="about-panel">
+    <button class="btn-back" onclick="backToHome()">⬅️ Back to Dashboard</button>
+    <h2 style="margin-bottom: 15px; color:#fbbf24;">Personal Bio-Data</h2>
+        
+        <div class="profile-card">
+            <div class="egg-avatar-box">
+                <img src="/1779352492512.jpg" alt="Arman Sk Image">
+            </div>
+            <h3>Arman Sk</h3>
+            
+            <table class="info-table">
+                <tr>
+                    <td class="td-label">Father's Name</td>
+                    <td class="td-val">Nasim Sk</td>
+                </tr>
+                <tr>
+                    <td class="td-label">Mother's Name</td>
+                    <td class="td-val">Alimun Bibi</td>
+                </tr>
+                <tr>
+                    <td class="td-label">Age</td>
+                    <td class="td-val">17</td>
+                </tr>
+                <tr>
+                    <td class="td-label">Class</td>
+                    <td class="td-val">11</td>
+                </tr>
+                <tr>
+                    <td class="td-label">Address</td>
+                    <td class="td-val">Chhatar Pukur Para, Ward No - 12<br>Sainthia, Birbhum<br>West Bengal - 731234</td>
+                </tr>
+                <tr>
+                    <td class="td-label">Phone Number</td>
+                    <td class="td-val">+91 6295232653</td>
+                </tr>
+                <tr>
+                    <td class="td-label">Gmail ID</td>
+                    <td class="td-val">ertiga2154@gmail.com</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="video-player-panel" id="as-video-workspace">
+        <h4 id="workspace-video-title" style="margin-bottom: 10px; color: #f59e0b;">Loading Stream...</h4>
+        <div class="video-box">
+            <iframe id="global-iframe" src="" allowfullscreen></iframe>
+        </div>
+        <div class="fallback-container">
+            <p style="font-size:0.85rem; color:#cbd5e1; font-weight: bold;">📺 Screen Blurry ba Playback Error asle niche click koro:</p>
+            <a id="external-yt-link" class="fallback-btn" target="_blank" href="#">Open Directly in YouTube App 🍿</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 AS Tech Studio • Built with Premium Logic</p>
+    </footer>
+</div>
+
+<script>
+    let activeTransportMode = "";
+
+    function runGreetingEngine() {
+        const currentHour = new Date().getHours();
+        const greetBox = document.getElementById('dynamic-greet');
+        
+        if (!greetBox) return;
+
+        if (currentHour >= 5 && currentHour < 12) {
+            greetBox.innerText = "🌤️ Good Morning!";
+        } else if (currentHour >= 12 && currentHour < 16) {
+            greetBox.innerText = "☀️ Good Afternoon!";
+        } else if (currentHour >= 16 && currentHour < 20) {
+            greetBox.innerText = "☕ Good Evening!";
+        } else {
+            greetBox.innerText = "🌙 Good Night!";
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', (event) => {
+        runGreetingEngine();
+    });
+
+    function routeTo(panelId) {
+        document.getElementById('home-dashboard').style.display = 'none';
+        const panels = document.querySelectorAll('.workspace-panel');
+        panels.forEach(p => p.style.display = 'none');
+        document.getElementById(panelId).style.display = 'block';
+    }
+
+    function backToHome() {
+        document.getElementById('home-dashboard').style.display = 'flex';
+        const panels = document.querySelectorAll('.workspace-panel');
+        panels.forEach(p => p.style.display = 'none');
+        document.getElementById('nav-input-terminal').style.display = 'none';
+        closeWorkspaceVideo();
+    }
+
+    function openNavigationForm(mode) {
+        activeTransportMode = mode;
+        const displayTitles = {
+            "bike": "🏍️ Bike Route Navigation Setup",
+            "car": "🚗 Car Driving Route Navigator",
+            "train": "🚂 Where Is My Train Schedule",
+            "aeroplane": "✈️ Worldwide Flight Finder Matrix"
+        };
+        document.getElementById('terminal-mode-title').innerText = displayTitles[mode];
+        document.getElementById('nav-input-terminal').style.display = 'block';
+        document.getElementById('nav-input-terminal').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function executeExternalNavigation() {
+        const fromLoc = encodeURIComponent(document.getElementById('geo-from').value.trim());
+        const toLoc = encodeURIComponent(document.getElementById('geo-to').value.trim());
+
+        if(!fromLoc || !toLoc) {
+            alert("Bhai, From ar To duto ghor-i thik thak bhabe likhun!");
+            return;
+        }
+
+        let targetUrl = "";
+
+        if (activeTransportMode === "bike") {
+            targetUrl = `http://googleusercontent.com/maps.google.com/maps?saddr=${fromLoc}&daddr=${toLoc}&dirflg=b`;
+        } 
+        else if (activeTransportMode === "car") {
+            targetUrl = `http://googleusercontent.com/maps.google.com/maps?saddr=${fromLoc}&daddr=${toLoc}&dirflg=d`;
+        } 
+        else if (activeTransportMode === "train") {
+            targetUrl = `https://www.google.com/search?q=train+from+${fromLoc}+to+${toLoc}`;
+        } 
+        else if (activeTransportMode === "aeroplane") {
+            targetUrl = `https://www.google.com/search?q=flights+from+${fromLoc}+to+${toLoc}`;
+        }
+
+        window.open(targetUrl, '_blank');
+    }
+
+    function loadVideo(title, videoId) {
+        document.getElementById('workspace-video-title').innerText = "Streaming: " + title;
+        document.getElementById('global-iframe').src = "https://www.youtube.com/embed/" + videoId + "?autoplay=1";
+        document.getElementById('external-yt-link').href = "https://www.youtube.com/watch?v=" + videoId;
+        document.getElementById('as-video-workspace').style.display = 'block';
+        document.getElementById('as-video-workspace').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function closeWorkspaceVideo() {
+        document.getElementById('global-iframe').src = "";
+        document.getElementById('as-video-workspace').style.display = 'none';
+    }
+
+    function launchACVideo() {
+        const brand = document.getElementById('ac-brand').value;
+        const ton = document.getElementById('ac-ton').value;
+        
+        const acVideoDatabase = {
+            "Voltas": { "1 Ton": "oC2nnHO4dEM", "1.5 Ton": "WxGM9Pu7XM4", "2 Ton": "EcQXSziwrXE" },
+            "Daikin": { "1 Ton": "lHsMSqDu2xg", "1.5 Ton": "YWXSHzZtYP4", "2 Ton": "BkBJTWo-2f8" },
+            "LG": { "1 Ton": "Ir24UYlx2EI", "1.5 Ton": "_aYZFllWH8s", "2 Ton": "W1mpSaPQwgc" },
+            "Samsung": { "1 Ton": "_02dmG_BPQI", "1.5 Ton": "Kta6gFcZITc", "2 Ton": "-qUGzdeqxJ4" }
+        };
+
+        const targetVideoId = acVideoDatabase[brand][ton];
+        if (targetVideoId) {
+            loadVideo(`${brand} (${ton}) Remote & Operation Tutorial`, targetVideoId);
+        } else {
+            alert("Video Link not registered in database matrix!");
+        }
+    }
+</script>
+</body>
+</html>
